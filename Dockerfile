@@ -1,15 +1,14 @@
 FROM python:3.11-slim
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libglib2.0-0 libsm6 libxrender1 libxext6 \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
-
 WORKDIR /app
 
-COPY app/ /app/
+# Copy model, code, requirements
 COPY model/ /app/model/
+COPY app/ /app/app/
 COPY app/requirements.txt .
 
+# Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-ENTRYPOINT ["python", "inference.py"]
+# Default command: run FastAPI server
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
